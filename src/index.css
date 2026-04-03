@@ -1,0 +1,940 @@
+@import "tailwindcss";
+
+*,
+*::before,
+*::after {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Prevent iOS/Android auto-zoom on input focus ──────────────────────────
+   iOS Safari zooms in when an input's font-size is less than 16px.
+   Setting font-size: 16px globally on inputs prevents this.
+   touch-action: manipulation disables double-tap zoom on buttons.       */
+input,
+textarea,
+select {
+  font-size: 16px !important;
+  touch-action: manipulation;
+}
+button {
+  touch-action: manipulation;
+}
+/* Viewport meta is set in index.html — this handles the CSS side */
+@media screen and (max-width: 768px) {
+  input,
+  textarea {
+    font-size: 16px !important;
+    /* Prevent zoom on focus */
+    -webkit-text-size-adjust: 100%;
+  }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(128, 128, 128, 0.22);
+  border-radius: 2px;
+}
+
+/* ── Connection dot animations ── */
+/* Connected: breathe in 1s, breathe out 1s = 2s total */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(0.78);
+  }
+}
+.dot-connected {
+  animation: breathe 2s ease-in-out infinite;
+}
+
+/* Disconnected (Reconnecting): radar pulse animation */
+@keyframes radar-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+@keyframes radar-core {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+.radar-container {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.radar-pulse {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid;
+  border-color: inherit;
+  animation: radar-pulse 1s ease-out infinite;
+}
+.radar-pulse:nth-child(2) {
+  animation-delay: 0.33s;
+}
+.radar-pulse:nth-child(3) {
+  animation-delay: 0.66s;
+}
+.radar-core {
+  animation: radar-core 1s ease-in-out infinite;
+  z-index: 1;
+}
+
+/* ── Badge pop ── */
+@keyframes badge-pop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  65% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.badge-pop {
+  animation: badge-pop 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── Modal / panel enter ── */
+@keyframes modal-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.modal-enter {
+  animation: modal-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes modal-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modal-card-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.985);
+  }
+}
+
+.modal-exit {
+  animation: modal-exit 0.18s ease both;
+}
+
+.modal-card-enter {
+  animation: modal-card-enter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.modal-card-exit {
+  animation: modal-card-exit 0.18s ease both;
+}
+
+/* ── Tab content slide ── */
+@keyframes tab-in {
+  from {
+    opacity: 0;
+    transform: translateX(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.tab-content {
+  transform: none;
+  animation: tab-in 0.24s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.tab-content-slide {
+  transform: none;
+  animation: tab-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Smooth position transition for popup message ── */
+@keyframes popupMove {
+  from {
+    transform: translate(var(--from-x), var(--from-y));
+  }
+  to {
+    transform: translate(0, 0);
+  }
+}
+
+/* Simple fade */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Float in (popups) ── */
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.88);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Popup direction variants ── */
+@keyframes floatInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes floatInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Slide up (bottom sheets) ── */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.slide-up {
+  transform: none;
+  animation: slideUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes mobileAuthInRight {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mobileAuthOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-18px);
+  }
+}
+
+.mobile-auth-panel {
+  will-change: transform, opacity;
+}
+
+.mobile-auth-in-right {
+  animation: mobileAuthInRight 0.26s ease both;
+}
+
+.mobile-auth-out-left {
+  animation: mobileAuthOutLeft 0.18s ease both;
+}
+
+/* ── Message / card appear ── */
+@keyframes msgAppear {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.93);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── Item disappear ── */
+@keyframes itemFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.94);
+  }
+}
+.item-appear {
+  animation: msgAppear 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.item-exit {
+  animation: itemFadeOut 0.18s ease forwards;
+}
+
+/* ── Smooth theme / color transitions ── */
+*:not([class*="dot-"]):not([class*="badge"]):not([class*="modal"]):not(
+    [class*="tab-"]
+  ):not([class*="slide"]):not([class*="item-"]) {
+  transition:
+    background-color 0.22s ease,
+    border-color 0.22s ease,
+    color 0.1s ease,
+    box-shadow 0.22s ease,
+    opacity 0.18s ease;
+}
+
+button,
+input,
+textarea {
+  transition:
+    background-color 0.16s ease,
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    color 0.1s ease,
+    filter 0.14s ease !important;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+button:hover:not(:disabled) {
+  transform: translateZ(0) !important;
+  box-shadow: var(--app-control-shadow-hover, 0 6px 14px rgba(0, 0, 0, 0.14));
+  filter: var(--app-hover-filter, brightness(1.06));
+}
+
+button:active:not(:disabled) {
+  transform: translateZ(0) !important;
+  filter: brightness(0.92);
+}
+
+button:hover:not(:disabled),
+[role="button"]:hover:not(:disabled),
+select:hover:not(:disabled) {
+  background-color: color-mix(in srgb, currentColor 8%, transparent);
+}
+
+button:active:not(:disabled),
+[role="button"]:active:not(:disabled),
+select:active:not(:disabled) {
+  background-color: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+/* Material-specific interaction tuning */
+:root {
+  --app-material: solid;
+  --app-panel-backdrop: none;
+  --app-button-lift: translateY(-0.5px);
+  --app-control-shadow: none;
+  --app-control-shadow-hover: 0 6px 14px rgba(0, 0, 0, 0.14);
+  --app-hover-scale: 1.012;
+  --app-active-scale: 0.992;
+  --app-hover-filter: brightness(1.06);
+  --app-radius-xs: 8px;
+  --app-radius-sm: 10px;
+  --app-radius-md: 12px;
+  --app-radius-lg: 16px;
+  --app-radius-xl: 20px;
+  --app-focus-radius: 12px;
+  --app-glow-radius: 12px;
+}
+
+button,
+input,
+textarea,
+select {
+  border-radius: var(--app-radius-sm) !important;
+  box-shadow: var(--app-control-shadow, none);
+}
+
+.shape-radius-xs {
+  border-radius: var(--app-radius-xs) !important;
+}
+
+.shape-radius-sm {
+  border-radius: var(--app-radius-sm) !important;
+}
+
+.shape-radius-md {
+  border-radius: var(--app-radius-md) !important;
+}
+
+.shape-radius-lg {
+  border-radius: var(--app-radius-lg) !important;
+}
+
+.shape-radius-xl {
+  border-radius: var(--app-radius-xl) !important;
+}
+
+button[aria-pressed="true"] {
+  background-color: color-mix(in srgb, var(--app-focus-color, #2563eb) 20%, transparent) !important;
+  border-color: color-mix(in srgb, var(--app-focus-color, #2563eb) 45%, transparent) !important;
+}
+
+input,
+textarea,
+select {
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    filter 0.14s ease !important;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+input:hover,
+textarea:hover,
+select:hover {
+  border-color: color-mix(in srgb, var(--app-focus-color, #2563eb) 42%, transparent);
+}
+
+button svg,
+button img,
+[role="button"] svg,
+[role="button"] img {
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+svg {
+  overflow: visible;
+}
+
+[data-layout="messenger"] [style*="font-size: 10"] {
+  font-size: 11px !important;
+}
+
+[data-layout="messenger"] [style*="padding: 8px 12px"],
+[data-layout="messenger"] [style*="padding: 10px 12px"] {
+  padding-top: 11px !important;
+  padding-bottom: 11px !important;
+}
+
+[data-layout="telegram"] [style*="font-size: 10"] {
+  letter-spacing: 0.18px;
+}
+
+[data-layout="sidebar"] [style*="font-size: 11"],
+[data-layout="sidebar"] [style*="font-size: 10"] {
+  letter-spacing: 0.22px;
+}
+
+[data-layout="telegram"] .modal-enter,
+[data-layout="sidebar"] .modal-enter {
+  animation: none !important;
+}
+
+.section-fade {
+  animation: sectionFadeIn 0.2s ease both;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    filter: saturate(0.96);
+  }
+  to {
+    opacity: 1;
+    filter: saturate(1);
+  }
+}
+
+@keyframes pulseConnected {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.82;
+  }
+}
+
+@keyframes pulseDisconnected {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.95;
+  }
+  50% {
+    transform: scale(0.93);
+    opacity: 0.58;
+  }
+}
+
+[style*="border-radius: 28"],
+[style*="border-radius: 20"],
+[style*="border-radius: 18"] {
+  backdrop-filter: var(--app-panel-backdrop, none);
+  -webkit-backdrop-filter: var(--app-panel-backdrop, none);
+}
+
+[data-material="glass"] button,
+[data-material="glass"] input,
+[data-material="glass"] textarea,
+[data-material="glass"] select,
+[data-material="glass"] [role="button"] {
+  backdrop-filter: blur(12px) saturate(145%);
+  -webkit-backdrop-filter: blur(12px) saturate(145%);
+  border-color: rgba(255, 255, 255, 0.24) !important;
+}
+
+[data-material="glass"] [style*="background: rgba"],
+[data-material="glass"] [style*="background: theme.surface"],
+[data-material="glass"] [style*="background: theme.surface2"] {
+  background-image:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.02) 42%),
+    linear-gradient(215deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 50%);
+}
+
+[data-material="glass"][data-theme="oceanic"] [style*="background: rgba"],
+[data-material="glass"][data-theme="oceanic"] button,
+[data-material="glass"][data-theme="oceanic"] input,
+[data-material="glass"][data-theme="oceanic"] textarea {
+  background-image:
+    linear-gradient(140deg, rgba(46, 196, 255, 0.16), rgba(46, 196, 255, 0.03) 45%),
+    linear-gradient(225deg, rgba(172, 233, 255, 0.16), rgba(172, 233, 255, 0) 55%);
+}
+
+[data-material="glass"][data-theme="aureate"] [style*="background: rgba"],
+[data-material="glass"][data-theme="aureate"] button,
+[data-material="glass"][data-theme="aureate"] input,
+[data-material="glass"][data-theme="aureate"] textarea {
+  background-image:
+    linear-gradient(140deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.04) 44%),
+    linear-gradient(220deg, rgba(255, 228, 150, 0.18), rgba(255, 228, 150, 0) 58%);
+}
+
+[data-material="glass"][data-theme="emerald"] [style*="background: rgba"],
+[data-material="glass"][data-theme="emerald"] button,
+[data-material="glass"][data-theme="emerald"] input,
+[data-material="glass"][data-theme="emerald"] textarea {
+  background-image:
+    linear-gradient(140deg, rgba(61, 220, 151, 0.18), rgba(61, 220, 151, 0.04) 44%),
+    linear-gradient(225deg, rgba(173, 255, 216, 0.14), rgba(173, 255, 216, 0) 58%);
+}
+
+[data-material="glass"] [style*="position: fixed"],
+[data-material="glass"] [style*="position: absolute"] {
+  backdrop-filter: blur(18px) saturate(155%);
+  -webkit-backdrop-filter: blur(18px) saturate(155%);
+}
+
+[data-material="glass"] button:hover:not(:disabled) {
+  filter: saturate(1.08) brightness(1.02);
+}
+
+[data-material="neumorphism"] button,
+[data-material="neumorphism"] input,
+[data-material="neumorphism"] textarea {
+  box-shadow:
+    inset 1px 1px 2px rgba(255, 255, 255, 0.22),
+    inset -2px -2px 3px rgba(0, 0, 0, 0.16);
+}
+
+[data-material="neumorphism"] button:hover:not(:disabled) {
+  box-shadow:
+    inset 2px 2px 5px rgba(255, 255, 255, 0.18),
+    inset -5px -5px 9px rgba(0, 0, 0, 0.22);
+}
+
+[data-material="m3"] button,
+[data-material="m3"] input,
+[data-material="m3"] textarea,
+[data-material="m3"] select {
+  border-radius: calc(var(--app-radius-sm) + 2px) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.22);
+}
+
+[data-material="m3"] button:hover:not(:disabled) {
+  filter: brightness(1.01) saturate(1.03);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.26),
+    0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+[data-material="m3"] button:active:not(:disabled) {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
+}
+
+[data-theme="aureate"] button:not(:disabled) {
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.16);
+}
+
+:focus-visible {
+  outline: var(--app-focus-width, 2px) solid var(--app-focus-color, #2563eb);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 2px var(--app-focus-halo, rgba(37, 99, 235, 0.4));
+  animation: focusHaloIn 0.2s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  transition:
+    outline-color 0.22s ease,
+    outline-offset 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+@keyframes focusHaloIn {
+  from {
+    outline-offset: 6px;
+    box-shadow: 0 0 0 0 var(--app-focus-halo, rgba(37, 99, 235, 0));
+  }
+  to {
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--app-focus-halo, rgba(37, 99, 235, 0.4));
+  }
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--app-focus-color, #2563eb) !important;
+  box-shadow:
+    0 0 0 1px var(--app-focus-color, #2563eb),
+    0 0 0 3px var(--app-focus-halo, rgba(37, 99, 235, 0.26)) !important;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled,
+select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: #94a3b8;
+}
+
+/* ── iOS/Android: prevent auto-zoom on input focus ── */
+/* iOS Safari zooms when input font-size < 16px. This forces 16px minimum. */
+@media screen and (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Backdrop fade */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Tooltip pop-in above a centered element ── */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.85) translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) scale(1) translateY(0);
+  }
+}
+
+/* ── Tooltip pop-in (non-centered, e.g. next to a button) ── */
+@keyframes fadeInScaleSimple {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Slide-up fade-out for toast notifications ── */
+@keyframes slideUpFade {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  20% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  80% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+/* ── Dropdown menu smooth appear ── */
+@keyframes dropdownAppear {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.dropdown-enter {
+  animation: dropdownAppear 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.app-menu {
+  border-radius: var(--app-radius-lg) !important;
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+}
+
+.app-menu-item {
+  min-height: 42px;
+  border-radius: var(--app-radius-md) !important;
+  transition: background-color 0.16s ease, transform 0.14s ease, color 0.14s ease;
+}
+
+.app-menu-item:hover {
+  transform: translateY(-0.5px);
+  background: color-mix(in srgb, currentColor 10%, transparent) !important;
+}
+
+.app-menu-item:active {
+  transform: translateY(0);
+}
+
+@keyframes tgHeaderTitleIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tg-header-title {
+  animation: tgHeaderTitleIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.sidebar-focus-nav-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--app-radius-md);
+  border: 1px solid color-mix(in srgb, var(--app-focus-color, #2563eb) 38%, transparent);
+  background: color-mix(in srgb, var(--app-focus-color, #2563eb) 18%, rgba(0, 0, 0, 0.24));
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  box-shadow:
+    0 8px 18px rgba(0, 0, 0, 0.24),
+    0 0 0 1px color-mix(in srgb, var(--app-focus-color, #2563eb) 18%, transparent);
+  animation: navIconFadeIn 0.22s ease both;
+}
+
+.sidebar-focus-nav-icon .line {
+  display: block;
+  width: 20px;
+  height: 2.5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--app-focus-text, #ffffff) 72%, #ffffff 28%);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--app-focus-halo, rgba(37, 99, 235, 0.35)) 70%, transparent);
+}
+
+.sidebar-focus-nav-icon .line-1 {
+  animation: navLineOne 1.2s ease-in-out infinite;
+}
+
+.sidebar-focus-nav-icon .line-2 {
+  animation: navLineTwo 1.2s ease-in-out infinite;
+}
+
+.sidebar-focus-nav-icon .line-3 {
+  animation: navLineThree 1.2s ease-in-out infinite;
+}
+
+@keyframes navIconFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes navLineOne {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(1.5px);
+    opacity: 1;
+  }
+}
+
+@keyframes navLineTwo {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.92;
+  }
+  50% {
+    transform: scaleX(0.86);
+    opacity: 1;
+  }
+}
+
+@keyframes navLineThree {
+  0%,
+  100% {
+    transform: translateX(0);
+    opacity: 0.85;
+  }
+  50% {
+    transform: translateX(-1.5px);
+    opacity: 1;
+  }
+}
+
+/* ── Tab content smooth height transition ── */
+@keyframes tabHeightIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.tab-height-enter {
+  animation: tabHeightIn 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
