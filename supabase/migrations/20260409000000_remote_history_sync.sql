@@ -1,0 +1,3 @@
+-- Migration stub matching remote history
+-- This migration was previously applied on the remote server.
+-- No local SQL file was tracked. This stub ensures migration history consistency.
